@@ -1,8 +1,8 @@
-FROM node:18
+FROM nginx:latest
 
 WORKDIR /app
 
-COPY . .
+COPY . /usr/share/nginx/html
 
 RUN npm install
 
