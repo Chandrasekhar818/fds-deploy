@@ -1,11 +1,11 @@
+# Use nginx base image
 FROM nginx:latest
 
-WORKDIR /app
-
+# Copy all your project files to nginx default folder
 COPY . /usr/share/nginx/html
 
-RUN npm install
+# Expose port 80 (nginx default)
+EXPOSE 80
 
-EXPOSE 3000
-
-CMD ["npm", "start"]
+# Start nginx server
+CMD ["nginx", "-g", "daemon off;"]
