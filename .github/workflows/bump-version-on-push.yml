@@ -1,0 +1,42 @@
+name: Bump Version On Push
+
+on:
+  push:
+    branches:
+      - deploy
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ensure VERSION file exists
+        run: |
+          if [ ! -f VERSION ]; then
+            echo "0.0.0" > VERSION
+          fi
+
+      - name: Bump patch version
+        run: |
+          VERSION=$(cat VERSION)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "$NEW_VERSION" > VERSION
+          echo "New version: $NEW_VERSION"
+
+      - name: Commit and push updated version
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add VERSION
+          git diff --cached --quiet || git commit -m "chore: bump version"
+          git push

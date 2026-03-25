@@ -1,0 +1,33 @@
+name: Version Check
+
+on:
+  pull_request:
+    branches:
+      - deploy
+  push:
+    branches:
+      - deploy
+
+jobs:
+  version-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check VERSION file exists
+        run: |
+          if [ ! -f VERSION ]; then
+            echo "VERSION file not found"
+            exit 1
+          fi
+
+      - name: Validate semantic version format
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=$VERSION"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format. Expected x.y.z"
+            exit 1
+          fi
